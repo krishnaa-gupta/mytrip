@@ -9,6 +9,6 @@ public class Airways {
 
     @GetMapping("/Airays")
     public String getData() {
-        return "Please book your flight ticket on 35% discount";
+        return "Please book your flight ticket on 25% discount";
     }
 }
