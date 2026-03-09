@@ -9,7 +9,7 @@ public class Run {
 
     @GetMapping("/Run")
     public String getData() {
-        return "Please book your ticket for marathon at 25% discount";
+        return "Please book your ticket for marathon at 35% discount";
     }
 }
 
