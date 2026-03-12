@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'javajenkinslave-tramA' }
+    agent { label 'javajenkinslave-teamA' }
 
     tools {
         maven 'maven'
