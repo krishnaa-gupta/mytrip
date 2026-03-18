@@ -56,7 +56,10 @@ pipeline {
                         echo "Push Docker Image to DockerHub: In Progress"
                         sh "docker push ${imageName}"
                         echo "Push Docker Image to DockerHub: Completed"
+                        }
                     }
                 }
             }
         }
+    }
+}
