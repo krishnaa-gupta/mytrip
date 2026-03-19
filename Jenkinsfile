@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HUB_USERNAME = "krishnaa0401"   // 🔁 replace with your Docker Hub username
+        IMAGE_NAME = "${DOCKER_HUB_USERNAME}/mytomcatimage:${BUILD_NUMBER}"
+    }
+
     stages {
 
         stage('Clone Code') {
@@ -17,29 +22,39 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    def imageName = "mytomcatimage:latest"
-                    sh "docker build -t ${imageName} ."
-                }
+                sh "docker build -t $IMAGE_NAME ."
             }
         }
 
         stage('Docker Login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                 }
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    def imageName = "mytomcatimage:latest"
-                    sh "docker push ${imageName}"
-                }
+                sh "docker push $IMAGE_NAME"
             }
         }
 
+    }
+
+    post {
+        success {
+            echo "✅ Build and Push successful: $IMAGE_NAME"
+        }
+        failure {
+            echo "❌ Pipeline failed"
+        }
+        always {
+            cleanWs()
+        }
     }
 }
