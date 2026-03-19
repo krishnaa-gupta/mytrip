@@ -15,23 +15,23 @@ pipeline {
             steps {
                 echo 'Code Compilation is In Progress!'
                 sh 'mvn clean compile'
-                echo 'Code Compilation is Completed Successfully!'
+                echo 'Code Compilation Completed!'
             }
         }
 
         stage('Code QA Execution') {
             steps {
-                echo 'JUnit Test case check in Progress!'
-                sh 'mvn clean test'
-                echo 'JUnit Test case check Completed!'
+                echo 'Running Test Cases...'
+                sh 'mvn test'
+                echo 'Test Cases Completed!'
             }
         }
 
         stage('Code Package') {
             steps {
-                echo 'Creating War Artifact'
-                sh 'mvn clean package'
-                echo 'Creating War Artifact Completed'
+                echo 'Packaging Application...'
+                sh 'mvn package'
+                echo 'Packaging Completed!'
             }
         }
 
