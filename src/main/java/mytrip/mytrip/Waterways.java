@@ -8,6 +8,6 @@ public class Waterways {
 
     @GetMapping("/Waterways")
     public String getData() {
-        return "Please book your ticket for your ship at 30% discount";
+        return "Please book your ticket for your ship at 40% discount";
     }
 }
