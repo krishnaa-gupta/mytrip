@@ -35,7 +35,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    def imageName = "mytomcatimage:latest"
+                    def imageName = "krishnaa0401/mytomcatimage:latest"
                     sh "docker push ${imageName}"
                 }
             }
