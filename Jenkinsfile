@@ -1,36 +1,43 @@
 pipeline {
-
     agent any
 
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
-    }
-
-    tools {
-        maven 'maven 3.9.14'
-    }
-
     stages {
-        stage('Code Compilation') {
+
+        stage('Clone Code') {
             steps {
-                echo 'Code Compilation is In Progress!'
-                sh 'mvn clean compile'
-                echo 'Code Compilation is Completed Successfully!'
-            }
-        }
-        stage('Code QA Execution') {
-            steps {
-                echo 'Junit Test case check in Progress!'
-                sh 'mvn clean test'
-                echo 'Junit Test case check Completed!'
+                git 'https://github.com/krishnaa-gupta/mytrip.git'
             }
         }
 
-        stage('Code Package') {
+        stage('Build') {
             steps {
-                echo 'Creating War Artifact'
                 sh 'mvn clean package'
-                echo 'Creating War Artifact Completed'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def imageName = "mytomcatimage:latest"
+                    sh "docker build -t ${imageName} ."
+                }
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    def imageName = "mytomcatimage:latest"
+                    sh "docker push ${imageName}"
+                }
             }
         }
     }
