@@ -1,4 +1,5 @@
 pipeline {
+
     agent any
 
     options {
@@ -6,34 +7,31 @@ pipeline {
     }
 
     tools {
-        maven 'maven_3.9.4'
+        maven 'maven3.9.4'
     }
 
     stages {
-
         stage('Code Compilation') {
             steps {
                 echo 'Code Compilation is In Progress!'
                 sh 'mvn clean compile'
-                echo 'Code Compilation Completed!'
+                echo 'Code Compilation is Completed Successfully!'
             }
         }
-
         stage('Code QA Execution') {
             steps {
-                echo 'Running Test Cases...'
-                sh 'mvn test'
-                echo 'Test Cases Completed!'
+                echo 'Junit Test case check in Progress!'
+                sh 'mvn clean test'
+                echo 'Junit Test case check Completed!'
             }
         }
 
         stage('Code Package') {
             steps {
-                echo 'Packaging Application...'
-                sh 'mvn package'
-                echo 'Packaging Completed!'
+                echo 'Creating War Artifact'
+                sh 'mvn clean package'
+                echo 'Creating War Artifact Completed'
             }
         }
-
     }
 }
