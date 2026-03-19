@@ -40,5 +40,21 @@ pipeline {
                 }
             }
         }
+        stage('Docker Image Push to Amazon ECR') {
+            steps {
+                script {
+                    echo "Tagging the Docker Image: In Progress"
+                    def ecrImageName = "524140443570.dkr.ecr.ap-south-1.amazonaws.com/mytrip/mytrip:dev-booking-v.1.${BUILD_NUMBER}"
+                    sh "docker tag ${imageName} ${ecrImageName}"
+                    echo "Tagging the Docker Image: Completed"
+
+                    withDockerRegistry([credentialsId: 'ecr:ap-south-1:ecr-credentials', url: 'https://559220132560.dkr.ecr.ap-south-1.amazonaws.com']) {
+                        echo "Push Docker Image to ECR: In Progress"
+                        sh "docker push ${ecrImageName}"
+                        echo "Push Docker Image to ECR: Completed"
+                    }
+                }
+            }
+        }
     }
 }
