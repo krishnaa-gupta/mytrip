@@ -63,7 +63,7 @@ pipeline {
                             sh 'docker login http://13.233.65.129:8085/repository/mytrip-ms/ -u admin -p ${PASSWORD}'
                             echo "Push Docker Image to Nexus: In Progress"
                             sh "docker tag ${env.IMAGE_NAME} 13.233.65.129:8085/mytrip-ms:${ecrImageName}"
-                            sh 'docker push 13.233.65.129:8085/mytrip-ms-${ecrImageName}'
+                            sh "docker push 13.233.65.129:8085/mytrip-ms-${ecrImageName}"
                             echo "Push Docker Image to Nexus: Completed"
                         }
                     }
