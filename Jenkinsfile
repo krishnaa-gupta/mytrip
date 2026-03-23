@@ -48,11 +48,11 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 
-                        sh "docker login 3.109.158.202:8085 -u $USERNAME -p $PASSWORD"
+                        sh "docker login 172.31.12.56:8085 -u $USERNAME -p $PASSWORD"
 
                         echo "Push Docker Image to Nexus: In Progress"
 
-                        def nexusImage = "3.109.158.202:8085/mytrip-ms:${BUILD_NUMBER}"
+                        def nexusImage = "172.31.12.56:8085/mytrip-ms:${BUILD_NUMBER}"
 
                         sh "docker tag ${IMAGE_NAME} ${nexusImage}"
                         sh "docker push ${nexusImage}"
