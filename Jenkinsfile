@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "krishnaa0401/mytomcatimage:latest"
-    }
-
     stages {
 
         stage('Clone Code') {
@@ -22,7 +18,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${IMAGE_NAME} ."
+                    def imageName = "krishnaa0401/mytomcatimage:latest"
+                    sh "docker build -t ${imageName} ."
                 }
             }
         }
@@ -38,62 +35,46 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    sh "docker push ${IMAGE_NAME}"
+                    def imageName = "krishnaa0401/mytomcatimage:latest"
+                    sh "docker push ${imageName}"
                 }
             }
         }
-
         stage('Docker Image Push to Amazon ECR') {
             steps {
                 script {
                     echo "Tagging the Docker Image: In Progress"
-
                     def ecrImageName = "524104443570.dkr.ecr.ap-south-1.amazonaws.com/mytrip/mytrip:dev-booking-v.1.${BUILD_NUMBER}"
-
-                    sh "docker tag ${IMAGE_NAME} ${ecrImageName}"
-
+                    sh "docker tag ${imageName} ${ecrImageName}"
                     echo "Tagging the Docker Image: Completed"
 
                     withDockerRegistry([credentialsId: 'ecr:ap-south-1:ecr-credentials', url: 'https://524104443570.dkr.ecr.ap-south-1.amazonaws.com']) {
-                        echo "Push Docker Image to ECR: In Progress"
-                        sh "docker push ${ecrImageName}"
-                        echo "Push Docker Image to ECR: Completed"
-                    }
-
-                    // Save for later stage
-                    env.ECR_IMAGE_NAME = ecrImageName
-                }
-            }
-        }
-
-        stage('Upload the Docker Image to Nexus') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-
-                        sh "docker login 13.203.155.223:8085 -u $USERNAME -p $PASSWORD"
-
-                        echo "Push Docker Image to Nexus: In Progress"
-
-                        def nexusImage = "13.203.155.223:8085/mytrip-ms:${BUILD_NUMBER}"
-
-                        sh "docker tag ${IMAGE_NAME} ${nexusImage}"
-                        sh "docker push ${nexusImage}"
-
-                        echo "Push Docker Image to Nexus: Completed"
+                    echo "Push Docker Image to ECR: In Progress"
+                    sh "docker push ${ecrImageName}"
+                    echo "Push Docker Image to ECR: Completed"
                     }
                 }
             }
-        }
+            stage('Upload the Docker Image to Nexus') {
+                steps {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'nexus-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
 
-        stage('Delete Local Docker Images') {
-            steps {
-                echo "Deleting Local Docker Images"
-
-                sh "docker rmi ${IMAGE_NAME} || true"
-                sh "docker rmi ${env.ECR_IMAGE_NAME} || true"
-
-                echo "Local Docker Images Deletion Completed"
+                            sh 'docker login http://13.203.155.223:8085/repository/mytrip-ms/ -u admin -p ${PASSWORD}'
+                            echo "Push Docker Image to Nexus: In Progress"
+                            sh "docker tag ${env.IMAGE_NAME} 13.203.155.223:8085/mytrip-ms:${ecrImageName}"
+                            sh "docker push 13.203.155.223:8085/mytrip-ms-${ecrImageName}"
+                            echo "Push Docker Image to Nexus: Completed"
+                        }
+                    }
+                }
+            }
+            stage('Delete Local Docker Images') {
+                steps {
+                    echo "Deleting Local Docker Images: ${env.IMAGE_NAME} and ${env.ECR_IMAGE_NAME}"
+                    sh "docker rmi ${env.IMAGE_NAME} ${env.ECR_IMAGE_NAME}"
+                    echo "Local Docker Images Deletion Completed"
+                }
             }
         }
     }
