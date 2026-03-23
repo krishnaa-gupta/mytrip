@@ -43,29 +43,6 @@ pipeline {
             }
         }
 
-        stage('Docker Image Push to Amazon ECR') {
-            steps {
-                script {
-                    echo "Tagging the Docker Image: In Progress"
-
-                    def ecrImageName = "524104443570.dkr.ecr.ap-south-1.amazonaws.com/mytrip/mytrip:dev-booking-v.1.${BUILD_NUMBER}"
-
-                    sh "docker tag ${IMAGE_NAME} ${ecrImageName}"
-
-                    echo "Tagging the Docker Image: Completed"
-
-                    withDockerRegistry([credentialsId: 'ecr:ap-south-1:ecr-credentials', url: 'https://524104443570.dkr.ecr.ap-south-1.amazonaws.com']) {
-                        echo "Push Docker Image to ECR: In Progress"
-                        sh "docker push ${ecrImageName}"
-                        echo "Push Docker Image to ECR: Completed"
-                    }
-
-                    // Save for later stage
-                    env.ECR_IMAGE_NAME = ecrImageName
-                }
-            }
-        }
-
         stage('Upload the Docker Image to Nexus') {
             steps {
                 script {
