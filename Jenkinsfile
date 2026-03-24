@@ -51,7 +51,7 @@ pipeline {
                     passwordVariable: 'PASSWORD'
                 )]) {
 
-                    sh 'echo $PASSWORD | docker login 172.31.12.56:8085 -u $USERNAME --password-stdin'
+                    sh 'echo $PASSWORD | docker login http://172.31.12.56:8085 -u $USERNAME --password-stdin'
 
                     script {
                         def nexusImage = "172.31.12.56:8085/mytrip-ms:${BUILD_NUMBER}"
