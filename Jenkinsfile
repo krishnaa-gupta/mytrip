@@ -68,20 +68,37 @@ pipeline {
         stage('Push Docker Image to Amazon ECR') {
             steps {
                 script {
-                    def ecrImageName = "524140443570.dkr.ecr.ap-south-1.amazonaws.com/mytrip.ecr/mytrip/mytrip:dev-booking-v.1.${BUILD_NUMBER}"
+                    def accountId = "524140443570"
+                    def region = "ap-south-1"
+                    def repoName = "mytrip.ecr/mytrip/mytrip"
+                    def ecrImage = "${accountId}.dkr.ecr.${region}.amazonaws.com/${repoName}:${BUILD_NUMBER}"
 
-                    echo "Tagging image for ECR..."
-                    sh "docker tag ${IMAGE_NAME} ${ecrImageName}"
+                    echo "Logging into AWS ECR..."
 
-                    withDockerRegistry([
-                        credentialsId: 'ecr:ap-south-1:ecr-credentials',
-                        url: 'https://524140443570.dkr.ecr.ap-south-1.amazonaws.com'
-                    ]) {
-                        echo "Pushing to ECR..."
-                        sh "docker push ${ecrImageName}"
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'ecr-credentials',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+
+                        sh """
+                        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                        aws configure set default.region ${region}
+
+                        aws ecr get-login-password --region ${region} | \
+                        docker login --username AWS --password-stdin ${accountId}.dkr.ecr.${region}.amazonaws.com
+                        """
                     }
 
-                    env.ECR_IMAGE_NAME = ecrImageName
+                    echo "Tagging Docker image..."
+                    sh "docker tag ${IMAGE_NAME} ${ecrImage}"
+
+                    echo "Pushing Docker image to ECR..."
+                    sh "docker push ${ecrImage}"
+
+                    env.ECR_IMAGE_NAME = ecrImage
                 }
             }
         }
