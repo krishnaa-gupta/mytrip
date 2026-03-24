@@ -70,7 +70,7 @@ pipeline {
                 script {
                     def accountId = "524140443570"
                     def region = "ap-south-1"
-                    def repoName = "mytrip.ecr/mytrip/mytrip"
+                    def repoName = "mytrip.ecr"
                     def ecrImage = "${accountId}.dkr.ecr.${region}.amazonaws.com/${repoName}:${BUILD_NUMBER}"
 
                     echo "Logging into AWS ECR..."
