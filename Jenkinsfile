@@ -88,6 +88,7 @@ pipeline {
                 sh "docker rmi ${IMAGE_NAME} || true"
                 sh "docker rmi ${env.ECR_IMAGE_NAME} || true"
                 echo "Local Docker Images Deletion Completed"
+                }
             }
         }
     }
