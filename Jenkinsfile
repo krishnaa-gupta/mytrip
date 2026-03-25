@@ -23,12 +23,13 @@ pipeline {
                 scannerHome = tool 'sonarqube-scanner'
             }
             steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh "${scannerHome}/bin/sonar-scanner"
-                    sh 'mvn sonar:sonar'
-                }
-            }
-            timeout(time: 10, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
+                    withSonarQubeEnv('sonar-server') {
+                        // Use either one, not both:
+                        sh 'mvn sonar:sonar'
+                        // or for non-Maven projects:
+                        // sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 waitForQualityGate abortPipeline: true
             }
         }
