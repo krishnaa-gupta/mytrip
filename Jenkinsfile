@@ -30,7 +30,8 @@ pipeline {
                         // or for non-Maven projects:
                         // sh "${scannerHome}/bin/sonar-scanner"
                     }
-                waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: true
+                }
             }
         }
         stage('Build Docker Image') {
