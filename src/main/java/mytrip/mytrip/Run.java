@@ -1,13 +1,15 @@
 package mytrip.mytrip;
 
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class Railways {
+public class Run {
 
-    @GetMapping("/Railways")
+    @GetMapping("/Run")
     public String getData() {
-        return "Please book your ticket on 70% discount";
+        return "Please book your ticket for marathon at 35% discount";
     }
 }
+

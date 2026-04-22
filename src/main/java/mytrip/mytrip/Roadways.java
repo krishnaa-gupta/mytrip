@@ -9,6 +9,6 @@ public class Roadways {
 
     @GetMapping("/Roadways")
     public String getData() {
-        return "Please book your ticket for bus on 25% discount";
+        return "Please book your ticket for bus on 35% discount";
     }
 }
